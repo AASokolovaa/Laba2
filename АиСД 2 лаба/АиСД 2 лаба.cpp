@@ -1,16 +1,18 @@
 ﻿#include<iostream>
+#include<complex>
+#include <iomanip>
 
 using namespace std;
 
-class Polynomial
+template <class T>class Polynomial
 {
 	struct Node
 	{
 		int degree;
-		double coefficient;
+		T coefficient;
 		Node* next;
 
-		Node(int degree, double coefficient, Node* next = nullptr) :degree(degree), coefficient(coefficient), next(next) { }
+		Node(int degree, T coefficient, Node* next = nullptr) :degree(degree), coefficient(coefficient), next(next) { }
 	};
 	Node* head;
 
@@ -33,19 +35,19 @@ public:
 		clear();
 	}
 
-	double specified(const double x) const
+	T specified(const double x) const
 	{
-		int value = 0;
+		T value = 0;
 		Node* polyn = head;
 		while (polyn)
 		{
 			value = value + (polyn->coefficient) * pow(x, polyn->degree);
 			polyn = polyn->next;
 		}
-
+		return value;
 	}
 
-	double operator[](int degree) const
+	T operator[](int degree) const
 	{
 		Node* polyn = head;
 		while (polyn)
@@ -71,10 +73,10 @@ public:
 		return *this;
 	}
 
-	Polynomial  operator +(const Polynomial& other)
+	Polynomial  operator +(const Polynomial<T>& other)
 	{
 		Node* variable = head;
-		Polynomial res = other;
+		Polynomial<T> res = other;
 		while (variable)
 		{
 			int value = 0;
@@ -98,10 +100,10 @@ public:
 		return res;
 	}
 
-	Polynomial  operator -(const Polynomial& other)
+	Polynomial  operator -(const Polynomial<T>& other)
 	{
 		Node* variable = head;
-		Polynomial res = other;
+		Polynomial<T> res = other;
 		while (variable)
 		{
 			int value = 0;
@@ -125,7 +127,7 @@ public:
 		return res;
 	}
 
-	void set(int degree, double coefficient)
+	void set(int degree, T coefficient)
 	{
 		if (degree < 0)
 			throw "The degree must be positive!";
@@ -135,7 +137,7 @@ public:
 		{
 			if (polyn->degree == degree)
 			{
-				if (coefficient == 0)
+				if (coefficient == (T)0)
 				{
 					Node* tmp = head;
 					if (tmp->next != NULL)
@@ -147,8 +149,10 @@ public:
 						tmp->next = polyn->next;
 						delete polyn;
 					}
+					else;
 					delete tmp;
 				}
+				else
 				polyn->coefficient = coefficient;
 				exists = 1;
 				break;
@@ -157,7 +161,7 @@ public:
 		}
 		if (!exists)
 		{
-			if (coefficient != 0)
+			if (coefficient != (T)0)
 			{
 				head = new Node(degree, coefficient, head);
 			}
@@ -174,7 +178,7 @@ public:
 		}
 	}
 
-	Polynomial  operator *(const double scalar)
+	Polynomial  operator *(const T scalar)
 	{
 
 		Node* variable = head;
@@ -190,6 +194,7 @@ public:
 	ostream& operator <<(ostream& out)
 	{
 		Node* polyn = head;
+		cout << "f(x)=";
 		while (polyn)
 		{
 			if (polyn->next != NULL)
@@ -202,7 +207,7 @@ public:
 		return out;
 	}
 
-	friend Polynomial operator *(const double scalar, const Polynomial& other)
+	friend Polynomial<T> operator *(const T scalar, const Polynomial<T>& other)
 	{
 		Node* variable = other.head;
 		Polynomial res;
@@ -217,4 +222,64 @@ public:
 
 };
 
-int main() {}
+int main()
+{
+	Polynomial<int> a;
+	Polynomial<int> b;
+	Polynomial<float> c;
+	Polynomial<float> d;
+	Polynomial<complex<double>> e;
+	Polynomial<complex<double>> f;
+	std::complex<double> x;
+	std::complex<double> y;
+	try
+	{
+		cout << "class int" << endl;
+		a.set(2, 2);
+		a << cout;
+		b.set(2, 4);
+		b << cout;
+		cout << "f1(2)= " << a.specified(2) << endl;
+		cout << "f2(2)= " << b.specified(2) << endl;
+		cout << "sum ";
+		a + b << cout;
+		cout << "dif ";
+		a - b << cout;
+		cout << "mul f1 by 2 ";
+		2 * a << cout;
+
+		cout << "class float" << endl;
+		c.set(2, 2.345);
+		c << cout;
+		d.set(2, 4.987);
+		d << cout;
+		cout << "f1(2)= " << c.specified(2) << endl;
+		cout << "f2(2)= " << d.specified(2) << endl;
+		cout << "sum ";
+		c + d << cout;
+		cout << "dif ";
+		c - d << cout;
+		cout << "mul f1 by 2 ";
+		2 * c << cout;
+
+		cout << "class complex<double>" << endl;
+		e.set(2, x);
+		e << cout;
+		f.set(2, y);
+		f << cout;
+		cout << "f1(2)= " << e.specified(2) << endl;
+		cout << "f2(2)= " << f.specified(2) << endl;
+		cout << "sum ";
+		e + f << cout;
+		cout << "dif ";
+		e - f << cout;
+		cout << "mul f1 by 2 ";
+		2 * e << cout;
+
+	}
+	catch (const char* err)
+	{
+		cout << err;
+	}
+
+}
